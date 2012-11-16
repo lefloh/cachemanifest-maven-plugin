@@ -4,7 +4,7 @@
 	<groupId>co.cantina.maven</groupId>
 	<artifactId>cachemanifest-maven-plugin</artifactId>
 	<packaging>maven-plugin</packaging>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.0-SNAPSHOT</version>
 	<name>Cache Manifest Generation Maven Plugin</name>
 	<dependencies>
 		<dependency>
@@ -42,6 +42,16 @@
 		<connection>scm:git:git@github.com:lefloh/cachemanifest-maven-plugin.git</connection>
 		<url>scm:git:git@github.com:lefloh/cachemanifest-maven-plugin.git</url>
 		<developerConnection>scm:git:git@github.com:lefloh/cachemanifest-maven-plugin.git</developerConnection>
-	  <tag>HEAD</tag>
-  </scm>
+		<tag>HEAD</tag>
+	</scm>
+	<distributionManagement>
+		<repository>
+			<id>adorsys.releases</id>
+			<url>https://maven.prod.adorsys.de/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>adorsys.snapshots</id>
+			<url>https://maven.prod.adorsys.de/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
