@@ -37,12 +37,12 @@ public class CacheManifestMojo extends AbstractMojo {
 	private File outputManifestFile;
 
 	/**
-	 * The directory to iterate over.
+	 * The directories to iterate over.
 	 *
 	 * @required
 	 * @parameter
 	 */
-	private File inputDirectory;
+	private Set<File> inputDirectories;
 
 	/**
 	 * An optional version number; used to indicate to clients (via a 
@@ -88,6 +88,7 @@ public class CacheManifestMojo extends AbstractMojo {
 	 * 
 	 * @see org.apache.maven.plugin.AbstractMojo#execute()
 	 */
+	@SuppressWarnings("unchecked")
 	public void execute() throws MojoExecutionException {
 		
 		if(includes.isEmpty()) {
@@ -109,8 +110,15 @@ public class CacheManifestMojo extends AbstractMojo {
 		
 		try {
 			// the manifest looks much nicer sorted - sort the set
-			@SuppressWarnings("unchecked")
-			SortedSet<File> includedFiles = new TreeSet<File>((Set<File>)scanner.getIncludedSources(inputDirectory, null));
+			SortedSet<String> includedFiles = new TreeSet<String>();
+			for (File dir : inputDirectories) {
+			    String baseDir = dir.getAbsolutePath();
+			    int idx = baseDir.endsWith("/") ? baseDir.length() : baseDir.length() + 1;
+			    Set<File> resources = scanner.getIncludedSources(dir, null);
+			    for (File file : resources) {
+				includedFiles.add(file.getAbsolutePath().substring(idx));
+			    }
+			}
 			
 			Writer w = new BufferedWriter(new FileWriter(outputManifestFile));
 
@@ -139,16 +147,9 @@ public class CacheManifestMojo extends AbstractMojo {
 				//w.write("\nCACHE:\n");
 			}
 
-			// paths should be relative - to do this, we'll strip chars off the front of each file's absolute path
-			String fileStripPrefix = inputDirectory.toString();
-			if(!fileStripPrefix.endsWith("/")) {
-				fileStripPrefix += "/"; // ensure it ends with a slash
-			}
-
-			for(File f : includedFiles) {
-				String relativeFilePath = f.toString().substring(fileStripPrefix.length());
-				w.write(relativeFilePath);
-				w.write("\n");
+			for (String filename : includedFiles) {
+			    w.write(filename);
+			    w.write("\n");
 			}
 			
 			// optionally, build the NETWORK: section
